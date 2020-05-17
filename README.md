@@ -10,7 +10,7 @@ web was tested on windows 7 using python 3.8
 
 ### Requirements
 
-[Requirements.txt](https://github.com/nortxort/web/blob/master/requirements.txt) contains a list of requirements which can be installed with `pip install -r /path/to/requirements.txt`
+[requirements.txt](https://github.com/nortxort/web/blob/master/requirements.txt) contains a list of requirements which can be installed with `pip install -r /path/to/requirements.txt`
 
 ## Usage
 
