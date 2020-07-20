@@ -27,7 +27,10 @@ DEALINGS IN THE SOFTWARE.
 import logging
 
 import aiohttp
-import aiofiles
+try:
+    import aiofiles
+except ImportError:
+    aiofiles = None
 
 from . import agent
 from .session import Session
@@ -114,6 +117,10 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024,
     :return: The destination of the downloaded file.
     :rtype: str | None
     """
+    if aiofiles is None:
+        log.error('aiofiles not installed -- cannot download files!')
+        return
+
     response = await request('GET', url=url, **kwargs)
     if response is not None:
 
