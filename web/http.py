@@ -25,6 +25,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import logging
+from collections import OrderedDict
 
 import aiohttp
 try:
@@ -47,6 +48,9 @@ def headers(header: dict = None, rua: bool = False) -> dict:
     :param rua: Use a random user agent string.
     :return: A header dictionary.
     """
+    if isinstance(header, OrderedDict):
+        return header
+
     if isinstance(header, dict):
         if header.get('User-Agent') is not None and rua:
             header['User-Agent'] = agent.random_agent()
