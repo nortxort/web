@@ -105,15 +105,13 @@ async def request(method: str, url: str, **kwargs):
         return response
 
 
-async def download_file(url: str, destination: str, chunk_size: int = 1024,
-                        mode: str = 'wb', **kwargs):
+async def download_file(url: str, destination: str, chunk_size: int = 1024, **kwargs):
     """
     Download file.
 
     :param url: The url of the file to download.
     :param destination: The destination path and file name to save.
     :param chunk_size: The size of the chunks to read/write.
-    :param mode: The file mode.
     :return: The destination of the downloaded file.
     :rtype: str | None
     """
@@ -126,7 +124,7 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024,
 
         log.debug(f'downloading {url} to {destination}')
 
-        async with aiofiles.open(destination, mode=mode) as f:
+        async with aiofiles.open(destination, mode='wb') as f:
             async for data in response.content.iter_chunked(chunk_size):
                 await f.write(data)
 

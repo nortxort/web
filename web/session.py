@@ -40,10 +40,11 @@ class Session(object):
     connector = None
 
     @classmethod
-    def create(cls, proxy: str = None):
+    def create(cls, cookies: dict = None, proxy: str = None):
         """
         Create a new aiohttp.ClientSession object
 
+        :param cookies: User provided cookies for session.
         :param proxy: If set, all session requests will use this proxy.
         :return: A aiohttp.ClientSession object.
         """
@@ -51,7 +52,7 @@ class Session(object):
         if proxy is not None:
             cls.connector = ProxyConnector.from_url(proxy)
 
-        cls.session = aiohttp.ClientSession(connector=cls.connector)
+        cls.session = aiohttp.ClientSession(cookies=cookies, connector=cls.connector)
         log.debug(f'creating session: {cls.session}, connector: {cls.connector}, proxy: {proxy}')
 
         return cls.session
