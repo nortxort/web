@@ -56,4 +56,5 @@ async def make_requests_concurrently():
     # wait for asyncio to finish
     await asyncio.sleep(1)
 
-asyncio.run(make_requests_concurrently())
+# asyncio.run(make_requests_concurrently())
+asyncio.get_event_loop().run_until_complete(make_requests_concurrently())

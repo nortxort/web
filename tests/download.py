@@ -45,4 +45,5 @@ async def download_a_file():
     # wait for asyncio to finish
     await asyncio.sleep(1)
 
-asyncio.run(download_a_file())
+# asyncio.run(download_a_file())
+asyncio.get_event_loop().run_until_complete(download_a_file())

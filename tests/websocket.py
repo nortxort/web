@@ -60,4 +60,5 @@ async def make_websocket_request():
     # wait for asyncio to finish
     await asyncio.sleep(1)
 
-asyncio.run(make_websocket_request())
+# asyncio.run(make_websocket_request())
+asyncio.get_event_loop().run_until_complete(make_websocket_request())

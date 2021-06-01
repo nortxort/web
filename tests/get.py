@@ -43,4 +43,5 @@ async def make_get_request():
     await asyncio.sleep(1)
 
 
-asyncio.run(make_get_request())
+# asyncio.run(make_get_request())
+asyncio.get_event_loop().run_until_complete(make_get_request())

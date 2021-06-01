@@ -43,4 +43,5 @@ async def make_post_request():
     # wait for asyncio to finish
     await asyncio.sleep(1)
 
-asyncio.run(make_post_request())
+# asyncio.run(make_post_request())
+asyncio.get_event_loop().run_until_complete(make_post_request())
