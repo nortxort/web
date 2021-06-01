@@ -5,7 +5,7 @@ A package for doing various web related tasks.
 
 ## Setup
 
-web was tested on windows 7 using python 3.8
+web was tested on windows 7/10 using python >= 3.8
 
 
 ### Requirements
