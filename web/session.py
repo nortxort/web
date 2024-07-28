@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 
 import asyncio
 import logging
-from typing import Any
 
 import aiohttp
 
@@ -116,7 +115,6 @@ class Session:
         if cls.session is not None:
 
             domain_cookies = cls.session.cookie_jar.filter_cookies(domain)
-            # domain_cookies = cls.cookie_jar().filter_cookies(domain)
 
             if name is None:
                 if len(domain_cookies) == 0:
@@ -138,14 +136,12 @@ class Session:
         If predicate is None, all session cookies will be deleted
         """
         cls.session.cookie_jar.clear(predicate)
-        # cls.cookie_jar().clear(predicate)
 
     @classmethod
     def clear_domain_cookies(cls, domain):
         """ Clear(delete) all cookies from domain. """
-        log.debug(f'clearing cookies for domain: `{domain}')
+        log.debug(f'deleting cookies for domain: `{domain}')
         cls.session.cookie_jar.clear_domain(domain)
-        # cls.cookie_jar().clear_domain(domain)
 
     @classmethod
     def get_cookie_by_name(cls, name):
