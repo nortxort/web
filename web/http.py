@@ -3,7 +3,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 Nortxort
+Copyright (c) 2024 Nortxort
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -28,44 +28,43 @@ import logging
 from collections import OrderedDict
 
 import aiohttp
+
+from . import agent
+from .session import Session
+
 try:
     import aiofiles
 except ImportError:
     aiofiles = None
 
-from . import agent
-from .session import Session
-
 
 log = logging.getLogger(__name__)
 
 
-def headers(header: dict = None, rua: bool = False) -> dict:
+def default_headers(headers: dict = None, rua: bool = False) -> dict:
     """
     Construct a basic header.
 
-    :param header: A user provided header.
+    :param headers: A user provided header.
     :param rua: Use a random user agent string.
     :return: A header dictionary.
     """
-    if isinstance(header, OrderedDict):
-        return header
+    if isinstance(headers, OrderedDict):
+        return headers
 
-    if isinstance(header, dict):
-        if header.get('User-Agent') is not None and rua:
-            header['User-Agent'] = agent.random_agent()
+    if isinstance(headers, dict):
+        if headers.get('User-Agent') is None:
+            headers['User-Agent'] = agent.DEFAULT_AGENT
+        if rua:
+            headers['User-Agent'] = agent.random_agent()
 
-        return header
+        return headers
     else:
         ua = agent.DEFAULT_AGENT
         if rua:
             ua = agent.random_agent()
 
-        h = {
-            'User-Agent': ua
-        }
-
-        return h
+        return {'User-Agent': ua}
 
 
 async def request(method: str, url: str, **kwargs):
@@ -76,14 +75,16 @@ async def request(method: str, url: str, **kwargs):
     :param url: The url for the request.
     :param kwargs: Keywords, see
     https://github.com/aio-libs/aiohttp/blob/581e97654410aa4b372b93e69434f6de79feeef4/aiohttp/client.py#L953
-    :return: A aiohttp.ClientResponse object or None on error.
+    :return: aiohttp.ClientResponse or None on error.
     :rtype: aiohttp.ClientResponse | None
     """
     error = None
     response = None
 
     header = kwargs.get('headers')
-    kwargs['headers'] = headers(header, kwargs.pop('rua', False))
+    kwargs['headers'] = default_headers(header, kwargs.pop('rua', False))
+
+    log.debug('headers: ' + str(kwargs['headers']))
 
     if Session.session is None:
         session = Session.create()
@@ -93,7 +94,6 @@ async def request(method: str, url: str, **kwargs):
     log.debug(f'{method} {url} {kwargs}')
 
     try:
-
         if method == 'websocket':
             response = await session.ws_connect(url=url, **kwargs)
         else:
@@ -104,7 +104,7 @@ async def request(method: str, url: str, **kwargs):
 
     finally:
         if error is not None:
-            log.error(error)
+            log.error(error, exc_info=True)
 
         return response
 
@@ -120,7 +120,7 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024, **kw
     :rtype: str | None
     """
     if aiofiles is None:
-        log.error('aiofiles not installed -- cannot download files!')
+        log.error('aiofiles not installed - cannot download files!')
         return
 
     response = await request('GET', url=url, **kwargs)
@@ -130,7 +130,7 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024, **kw
 
         async with aiofiles.open(destination, mode='wb') as f:
             async for data in response.content.iter_chunked(chunk_size):
-                await f.write(data)
+                await f.write(await data)
 
         return destination
 
@@ -142,7 +142,7 @@ async def websocket(url: str, **kwargs):
     websocket request.
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientWebSocketResponse or None.
+    :return: An aiohttp.ClientWebSocketResponse or None.
     :rtype: aiohttp.ClientWebSocketResponse | None
     """
     return await request(method='websocket', url=url, **kwargs)
@@ -153,7 +153,7 @@ async def get(url: str, **kwargs):
     GET request.
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientResponse or None.
+    :return: An aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='GET', url=url, **kwargs)
@@ -164,7 +164,7 @@ async def post(url: str, **kwargs):
     POST request.
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientResponse or None.
+    :return: An aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='POST', url=url, **kwargs)

@@ -24,30 +24,36 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from .agent import DEFAULT_AGENT, COMMON_AGENTS, random_agent
-from .session import Session
-from .utilities import url_parse, url_encode, url_decode
-from .http import request, get, post, websocket, \
-     download_file, default_headers, put, patch, delete
+import urllib.parse
 
-__version__ = '2.0.0'  # 2.0.0 25/5/2024
 
-__all__ = [
-    '__version__',
-    'DEFAULT_AGENT',
-    'COMMON_AGENTS',
-    'random_agent',
-    'Session',
-    'request',
-    'get',
-    'post',
-    'websocket',
-    'download_file',
-    'default_headers',
-    'put',
-    'patch',
-    'delete',
-    'url_parse',
-    'url_encode',
-    'url_decode'
-]
+def url_parse(url: str,
+              scheme: str = '',
+              allow_fragments: bool = True) -> tuple:
+    """ Parse a url in to different parts. """
+
+    return urllib.parse.urlparse(url,
+                                 scheme=scheme,
+                                 allow_fragments=allow_fragments)
+
+
+def url_encode(input_str: str,
+               safe: str = '',
+               encoding=None,
+               errors=None) -> str:
+    """ Url encode a str. """
+
+    return urllib.parse.quote_plus(input_str,
+                                   safe=safe,
+                                   encoding=encoding,
+                                   errors=errors)
+
+
+def url_decode(input_str: str,
+               encoding: str = 'utf-8',
+               errors: str = 'replace') -> str:
+    """ Decode a url encoded str. """
+
+    return urllib.parse.unquote_plus(input_str,
+                                     encoding=encoding,
+                                     errors=errors)
