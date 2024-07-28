@@ -88,73 +88,47 @@ class Session:
 
     @classmethod
     def cookie_jar(cls):
-        """ All cookies in the cookie_jar. """
+        """ All session cookies. """
         if cls.session is not None:
             return cls.session.cookie_jar
 
         return None
 
     @classmethod
-    def cookies(cls, domain: str, name: str = None):
-        """
-        Get cookie(s) for a specific domain.
-
-        If only domain is given, all cookies for the domain
-        will be returned as SimpleCookie.
-
-        If a name is also provided, then the cookie will be
-        returned as Morsel.
-
-        None will be returned if no cookies for the domain exists,
-        or if there is no cookie with that name.
-
-        :param domain: The domain for which the cookie(s) belongs.
-        :param name: The name of the cookie.
-        :return: SimpleCookie, Morsel or None.
-        """
-        if cls.session is not None:
-
-            domain_cookies = cls.session.cookie_jar.filter_cookies(domain)
-
-            if name is None:
-                if len(domain_cookies) == 0:
-                    return None
-
-                return domain_cookies
-
-            cookie = domain_cookies.get(name)
-            if cookie is not None:
-                return cookie
-
-        return None
+    def delete_all_session_cookies(cls):
+        # TODO: Test
+        """ Clear(delete) all session cookies. """
+        cls.session.cookie_jar.clear(None)
 
     @classmethod
-    def clear_cookies(cls, predicate=None):
-        """
-        Clear(delete) cookie(s).
-
-        If predicate is None, all session cookies will be deleted
-        """
-        cls.session.cookie_jar.clear(predicate)
-
-    @classmethod
-    def clear_domain_cookies(cls, domain):
+    def delete_cookies_by_domain(cls, domain):
         """ Clear(delete) all cookies from domain. """
         log.debug(f'deleting cookies for domain: `{domain}')
         cls.session.cookie_jar.clear_domain(domain)
 
     @classmethod
-    def get_cookie_by_name(cls, name):
-        """ Get a cookie Morsel by name. """
+    def delete_cookie_by_name(cls, predicate=None):
+        """ This method *should* delete a cookie by name. """
+        # TODO: Make this work!
+        cls.session.cookie_jar.clear(predicate)
+
+    @classmethod
+    def get_cookie_by_name(cls, name: str):
+        """ Get a cookie as Morsel by name. """
         if cls.session is not None:
-            for cookie in cls.session.cookie_jar:
-                if cookie.key == name:
-                    return cookie
+            if len(cls.session.cookie_jar) > 0:
+                for cookie in cls.session.cookie_jar:
+                    if cookie.key == name:
+                        return cookie
         return None
 
     @classmethod
+    def get_cookies_by_domain(cls, domain: str):
+        # TODO: Test
+        return cls.session.cookie_jar.filter_cookies(domain)
+
+    @classmethod
     async def close_connector(cls):
-        # if type(cls.connector) in connector.types:
         if cls.connector is not None:
             log.debug(f'connector close `cls.connector` type={type(cls.connector)}')
             await cls.connector.close()
