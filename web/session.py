@@ -92,25 +92,26 @@ class Session:
         if cls.session is not None:
             return cls.session.cookie_jar
 
-        return None
-
     @classmethod
-    def delete_all_session_cookies(cls):
+    def delete_all_cookies(cls):
         # TODO: Test
         """ Clear(delete) all session cookies. """
-        cls.session.cookie_jar.clear(None)
+        if cls.session is not None:
+            cls.session.cookie_jar.clear(None)
 
     @classmethod
     def delete_cookies_by_domain(cls, domain):
         """ Clear(delete) all cookies from domain. """
         log.debug(f'deleting cookies for domain: `{domain}')
-        cls.session.cookie_jar.clear_domain(domain)
+        if cls.session is not None:
+            cls.session.cookie_jar.clear_domain(domain)
 
     @classmethod
     def delete_cookie_by_name(cls, predicate=None):
         """ This method *should* delete a cookie by name. """
         # TODO: Make this work!
-        cls.session.cookie_jar.clear(predicate)
+        if cls.session is not None:
+            cls.session.cookie_jar.clear(predicate)
 
     @classmethod
     def get_cookie_by_name(cls, name: str):
@@ -120,12 +121,12 @@ class Session:
                 for cookie in cls.session.cookie_jar:
                     if cookie.key == name:
                         return cookie
-        return None
 
     @classmethod
     def get_cookies_by_domain(cls, domain: str):
         # TODO: Test
-        return cls.session.cookie_jar.filter_cookies(domain)
+        if cls.session is not None:
+            return cls.session.cookie_jar.filter_cookies(domain)
 
     @classmethod
     async def close_connector(cls):
