@@ -114,6 +114,12 @@ class Session:
             cls.session.cookie_jar.clear(predicate)
 
     @classmethod
+    def get_cookies_by_domain(cls, domain: str):
+        # TODO: Test
+        if cls.session is not None:
+            return cls.session.cookie_jar.filter_cookies(domain)
+
+    @classmethod
     def get_cookie_by_name(cls, name: str):
         """ Get a cookie as Morsel by name. """
         if cls.session is not None:
@@ -121,12 +127,6 @@ class Session:
                 for cookie in cls.session.cookie_jar:
                     if cookie.key == name:
                         return cookie
-
-    @classmethod
-    def get_cookies_by_domain(cls, domain: str):
-        # TODO: Test
-        if cls.session is not None:
-            return cls.session.cookie_jar.filter_cookies(domain)
 
     @classmethod
     async def close_connector(cls):
