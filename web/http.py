@@ -60,9 +60,10 @@ def default_headers(headers: dict = None, rua: bool = False) -> dict:
 
         return headers
     else:
-        ua = agent.DEFAULT_AGENT
         if rua:
             ua = agent.random_agent()
+        else:
+            ua = agent.DEFAULT_AGENT
 
         return {'User-Agent': ua}
 
