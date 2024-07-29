@@ -101,7 +101,7 @@ class Session:
 
     @classmethod
     def delete_cookies_by_domain(cls, domain):
-        """ Clear(delete) all cookies from domain. """
+        """ Clear(delete) all cookies from domain and subdomains. """
         log.debug(f'deleting cookies for domain: `{domain}')
         if cls.session is not None:
             cls.session.cookie_jar.clear_domain(domain)
@@ -127,6 +127,32 @@ class Session:
                 for cookie in cls.session.cookie_jar:
                     if cookie.key == name:
                         return cookie
+
+    @classmethod
+    def cookies(cls, domain: str, name: str = None):
+        """
+        Get cookie(s) for a specific domain.
+
+        If only domain is given, all cookies for the domain
+        will be returned as SimpleCookie.
+
+        If a name is also provided, then the cookie will be
+        returned as Morsel.
+
+        None will be returned if no cookies for the domain exists,
+        or if there is no cookie with that name.
+        """
+        if cls.session is not None:
+            domain_cookies = cls.session.cookie_jar.filter_cookies(domain)
+
+            if name is None:
+                if len(domain_cookies) == 0:
+                    return None
+                return domain_cookies
+
+            cookie = domain_cookies.get(name)
+            if cookie is not None:
+                return cookie
 
     @classmethod
     async def close_connector(cls):
