@@ -48,6 +48,7 @@ class Session:
     """
     session = None
     connector = None
+    deletable_cookies = []
 
     @classmethod
     def create(cls, cookies: dict = None, connector=None):
@@ -72,7 +73,7 @@ class Session:
             cls.connector = connector
 
         cls.session = aiohttp.ClientSession(cookies=cookies, connector=cls.connector)
-        log.debug(f'creating session: {cls.session}, connector: {cls.connector}')
+        log.debug(f'creating session: `{cls.session}`, connector: `{cls.connector}`')
 
         return cls.session
 
@@ -80,7 +81,7 @@ class Session:
     async def close(cls, delay: float = 0.250):
         """ Close the session object. """
         if cls.session is not None:
-            log.debug(f'closing, `cls.session` type={type(cls.session)}')
+            log.debug(f'closing session, type: `{type(cls.session)}`')
             await cls.session.close()
             # wait for connections to close
             await asyncio.sleep(delay)
@@ -93,40 +94,32 @@ class Session:
             return cls.session.cookie_jar
 
     @classmethod
-    def delete_all_cookies(cls):
-        # TODO: Test
-        """ Clear(delete) all session cookies. """
+    def filter_cookies(cls, request_url: str):
+        """ Filter cookies by request url. """
         if cls.session is not None:
+            log.debug(f'filtering cookies for: `{request_url}`')
+            return cls.session.cookie_jar.filter_cookies(request_url)
+
+    @classmethod
+    def delete_all_cookies(cls):
+        """ Delete all session cookies. """
+        if cls.session is not None:
+            log.debug(f'deleting `{len(cls.session.cookie_jar)}` session cookies')
             cls.session.cookie_jar.clear(None)
 
     @classmethod
     def delete_cookies_by_domain(cls, domain):
-        """ Clear(delete) all cookies from domain and subdomains. """
-        log.debug(f'deleting cookies for domain: `{domain}')
+        """ Delete all cookies for domain and subdomains. """
         if cls.session is not None:
+            log.debug(f'deleting cookies for domain: `{domain}`')
             cls.session.cookie_jar.clear_domain(domain)
 
     @classmethod
     def delete_cookie_by_name(cls, predicate=None):
-        """ This method *should* delete a cookie by name. """
-        # TODO: Make this work!
+        """ Delete a cookie by name. """
+        # TODO: Rewrite
         if cls.session is not None:
             cls.session.cookie_jar.clear(predicate)
-
-    @classmethod
-    def get_cookies_by_domain(cls, domain: str):
-        # TODO: Test
-        if cls.session is not None:
-            return cls.session.cookie_jar.filter_cookies(domain)
-
-    @classmethod
-    def get_cookie_by_name(cls, name: str):
-        """ Get a cookie as Morsel by name. """
-        if cls.session is not None:
-            if len(cls.session.cookie_jar) > 0:
-                for cookie in cls.session.cookie_jar:
-                    if cookie.key == name:
-                        return cookie
 
     @classmethod
     def cookies(cls, domain: str, name: str = None):
@@ -134,7 +127,7 @@ class Session:
         Get cookie(s) for a specific domain.
 
         If only domain is given, all cookies for the domain
-        will be returned as SimpleCookie.
+        will be returned as a list of Morsels.
 
         If a name is also provided, then the cookie will be
         returned as Morsel.
@@ -142,22 +135,27 @@ class Session:
         None will be returned if no cookies for the domain exists,
         or if there is no cookie with that name.
         """
+        log.debug(f'domain: `{domain}`, name: `{name}`')
+
+        domain_cookies = []
         if cls.session is not None:
-            domain_cookies = cls.session.cookie_jar.filter_cookies(domain)
 
-            if name is None:
-                if len(domain_cookies) == 0:
-                    return None
-                return domain_cookies
+            for cookie in cls.session.cookie_jar:
+                if cookie['domain'] == domain:
+                    domain_cookies.append(cookie)
 
-            cookie = domain_cookies.get(name)
-            if cookie is not None:
-                return cookie
+            if len(domain_cookies) > 0:
+                if name is None:
+                    return domain_cookies
+                else:
+                    for cookie in domain_cookies:
+                        if cookie.key == name:
+                            return cookie
 
     @classmethod
     async def close_connector(cls):
         if cls.connector is not None:
-            log.debug(f'connector close `cls.connector` type={type(cls.connector)}')
+            log.debug(f'closing connector type: `{type(cls.connector)}`')
             await cls.connector.close()
             cls.connector = None
 
