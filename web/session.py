@@ -116,7 +116,7 @@ class Session:
 
     @classmethod
     def delete_cookie_by_name(cls, domain: str, name: str):
-        cookie = Session.cookies(domain, name)
+        cookie = cls.cookies(domain, name)
         if cookie is not None:
             cls.cookie_to_delete = cookie
             cls.session.cookie_jar.clear(cls._has_cookie_to_delete)
