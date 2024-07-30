@@ -48,7 +48,7 @@ class Session:
     """
     session = None
     connector = None
-    deletable_cookies = []
+    cookie_to_delete = None
 
     @classmethod
     def create(cls, cookies: dict = None, connector=None):
@@ -115,11 +115,12 @@ class Session:
             cls.session.cookie_jar.clear_domain(domain)
 
     @classmethod
-    def delete_cookie_by_name(cls, predicate=None):
-        """ Delete a cookie by name. """
-        # TODO: Rewrite
-        if cls.session is not None:
-            cls.session.cookie_jar.clear(predicate)
+    def delete_cookie_by_name(cls, domain: str, name: str):
+        cookie = Session.cookies(domain, name)
+        if cookie is not None:
+            cls.cookie_to_delete = cookie
+            cls.session.cookie_jar.clear(cls._has_cookie_to_delete)
+            log.debug(f'deleted cookie: `{cookie}`')
 
     @classmethod
     def cookies(cls, domain: str, name: str = None):
@@ -171,3 +172,11 @@ class Session:
         # https://docs.aiohttp.org/en/stable/client_reference.html#aiohttp.ClientSession.detach
         if cls.session is not None:
             cls.session.detach()
+
+    @classmethod
+    def _has_cookie_to_delete(cls, morsel):
+        if (morsel.key == cls.cookie_to_delete.key and
+                morsel['domain'] == cls.cookie_to_delete['domain']):
+            cls.cookie_to_delete = None
+            return True
+        return False
