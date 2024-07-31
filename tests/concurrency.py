@@ -3,7 +3,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 Nortxort
+Copyright (c) 2024 Nortxort
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -53,8 +53,5 @@ async def make_requests_concurrently():
 
     # close the session
     await Session.close()
-    # wait for asyncio to finish
-    await asyncio.sleep(1)
 
-# asyncio.run(make_requests_concurrently())
-asyncio.get_event_loop().run_until_complete(make_requests_concurrently())
+asyncio.run(make_requests_concurrently())

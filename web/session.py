@@ -24,9 +24,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-# https://docs.python.org/3/library/http.cookies.html
-# https://docs.aiohttp.org/en/stable/abc.html#aiohttp.abc.AbstractCookieJar
-
 import asyncio
 import logging
 
@@ -54,12 +51,6 @@ class Session:
     def create(cls, cookies: dict = None, connector=None):
         """
         Create a new aiohttp.ClientSession object.
-
-        creating a new aiohttp.ClientSession is
-        basically the same as opening a browser.
-
-        cookies will be stored for as long as the session
-        is open.
 
         :param cookies: User provided cookies for session.
         :param connector:
@@ -116,11 +107,11 @@ class Session:
 
     @classmethod
     def delete_cookie_by_name(cls, domain: str, name: str):
+        """ Delete cookie by name. """
         cookie = cls.cookies(domain, name)
         if cookie is not None:
             cls.cookie_to_delete = cookie
             cls.session.cookie_jar.clear(cls._has_cookie_to_delete)
-            log.debug(f'deleted cookie: `{cookie}`')
 
     @classmethod
     def cookies(cls, domain: str, name: str = None):
@@ -175,8 +166,9 @@ class Session:
 
     @classmethod
     def _has_cookie_to_delete(cls, morsel):
+        # this is for internal use and should not be called directly
         if (morsel.key == cls.cookie_to_delete.key and
                 morsel['domain'] == cls.cookie_to_delete['domain']):
-            cls.cookie_to_delete = None
+            log.debug(f'morsel deleted: `{morsel}`')
             return True
         return False

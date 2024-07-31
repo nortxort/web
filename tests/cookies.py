@@ -25,19 +25,57 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import asyncio
+
 from web import get, Session
 
 
-async def make_get_request():
-    """
-    Test the GET feature of the web package.
-    """
-    response = await get('https://httpbin.org/get')
-    if response is not None:
-        print(await response.text())
-        # print(await response.json())
+def show_cookies_jar():
+    print(f'cookie items in jar: {len(Session.cookie_jar())}')
+
+    for cookie in Session.cookie_jar():
+        print(f'cookie> {cookie}')
+
+
+async def set_cookie():
+    # each of the urls will set a cookie
+    urls = [
+        'http://httpbin.org/cookies/set/cookie1/cookie1_value',
+        'http://httpbin.org/cookies/set/cookie2/cookie2_value',
+        'http://httpbin.org/cookies/set/cookie3/cookie3_value'
+    ]
+
+    for url in urls:
+        await get(url)
+
+
+async def delete_cookie():
+    # set some cookies
+    await set_cookie()
+
+    # show the cookies in the sessions cookie jar
+    show_cookies_jar()
+
+    # delete one of the cookies
+    Session.delete_cookie_by_name('httpbin.org', 'cookie2')
+
+    # show the remaining cookies
+    show_cookies_jar()
 
     # close the session
     await Session.close()
 
-asyncio.run(make_get_request())
+
+async def get_cookies_by_domain():
+    # set some cookies
+    await set_cookie()
+
+    # get all cookies for domain
+    cookies = Session.cookies('httpbin.org')
+    for cookie in cookies:
+        print(f'cookie> {cookie}')
+
+    # close the session
+    await Session.close()
+
+
+asyncio.run(get_cookies_by_domain())

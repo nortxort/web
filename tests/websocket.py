@@ -3,7 +3,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 Nortxort
+Copyright (c) 2024 Nortxort
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -25,7 +25,9 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import asyncio
-from web import aiohttp, websocket, Session
+import aiohttp
+
+from web import websocket, Session
 
 
 async def make_websocket_request():
@@ -57,8 +59,5 @@ async def make_websocket_request():
 
     # close the session
     await Session.close()
-    # wait for asyncio to finish
-    await asyncio.sleep(1)
 
-# asyncio.run(make_websocket_request())
-asyncio.get_event_loop().run_until_complete(make_websocket_request())
+asyncio.run(make_websocket_request())
