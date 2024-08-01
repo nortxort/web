@@ -158,13 +158,6 @@ class Session:
         await cls.close_connector()
 
     @classmethod
-    def detach(cls):
-        # TODO:
-        # https://docs.aiohttp.org/en/stable/client_reference.html#aiohttp.ClientSession.detach
-        if cls.session is not None:
-            cls.session.detach()
-
-    @classmethod
     def _has_cookie_to_delete(cls, morsel):
         # this is for internal use and should not be called directly
         if (morsel.key == cls.cookie_to_delete.key and
