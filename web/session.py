@@ -45,7 +45,7 @@ class Session:
     """
     session = None
     connector = None
-    cookie_to_delete = None
+    _cookie_to_delete = None
 
     @classmethod
     def create(cls, cookies: dict = None, connector=None):
@@ -69,8 +69,13 @@ class Session:
         return cls.session
 
     @classmethod
-    async def close(cls, delay: float = 0.250):
-        """ Close the session object. """
+    async def close(cls, delay: float = 0.250) -> None:
+        """
+        Close the session object.
+
+        :param delay: A small delay to let connections close gracefully.
+        :type delay: float
+        """
         if cls.session is not None:
             log.debug(f'closing session, type: `{type(cls.session)}`')
             await cls.session.close()
@@ -80,13 +85,20 @@ class Session:
 
     @classmethod
     def cookie_jar(cls):
-        """ All session cookies. """
+        """ All the cookies for the session. """
         if cls.session is not None:
             return cls.session.cookie_jar
 
     @classmethod
     def filter_cookies(cls, request_url: str):
-        """ Filter cookies by request url. """
+        """
+        Filter cookies by request url.
+
+        :param request_url: The request url to filter for.
+        :type request_url: str
+        :return: a dictionary-like object whose keys are
+        strings and whose values are Morsel instances.
+        """
         if cls.session is not None:
             log.debug(f'filtering cookies for: `{request_url}`')
             return cls.session.cookie_jar.filter_cookies(request_url)
@@ -99,18 +111,30 @@ class Session:
             cls.session.cookie_jar.clear(None)
 
     @classmethod
-    def delete_cookies_by_domain(cls, domain):
-        """ Delete all cookies for domain and subdomains. """
+    def delete_cookies_by_domain(cls, domain) -> None:
+        """
+        Delete all cookies for domain and subdomains.
+
+        :param domain: The domain to delete cookies for.
+        :type domain: str
+        """
         if cls.session is not None:
             log.debug(f'deleting cookies for domain: `{domain}`')
             cls.session.cookie_jar.clear_domain(domain)
 
     @classmethod
-    def delete_cookie_by_name(cls, domain: str, name: str):
-        """ Delete cookie by name. """
+    def delete_cookie_by_name(cls, domain: str, name: str) -> None:
+        """
+        Delete cookie by name.
+
+        :param domain: The domain the cookie belongs to.
+        :type domain: str
+        :param name: The name of the cookie to delete.
+        :type name: str
+        """
         cookie = cls.cookies(domain, name)
         if cookie is not None:
-            cls.cookie_to_delete = cookie
+            cls._cookie_to_delete = cookie
             cls.session.cookie_jar.clear(cls._has_cookie_to_delete)
 
     @classmethod
@@ -160,8 +184,8 @@ class Session:
     @classmethod
     def _has_cookie_to_delete(cls, morsel):
         # this is for internal use and should not be called directly
-        if (morsel.key == cls.cookie_to_delete.key and
-                morsel['domain'] == cls.cookie_to_delete['domain']):
+        if (morsel.key == cls._cookie_to_delete.key and
+                morsel['domain'] == cls._cookie_to_delete['domain']):
             log.debug(f'morsel deleted: `{morsel}`')
             return True
         return False
