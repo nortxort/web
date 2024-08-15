@@ -104,7 +104,7 @@ class Session:
             return cls.session.cookie_jar.filter_cookies(request_url)
 
     @classmethod
-    def delete_all_cookies(cls):
+    def delete_all_cookies(cls) -> None:
         """ Delete all session cookies. """
         if cls.session is not None:
             log.debug(f'deleting `{len(cls.session.cookie_jar)}` session cookies')
