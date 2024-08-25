@@ -29,12 +29,6 @@ import logging
 
 import aiohttp
 
-# implement aiohttp-socks
-# https://github.com/romis2012/aiohttp-socks
-try:
-    from aiohttp_socks import ProxyConnector
-except ImportError:
-    ProxyConnector = None
 
 log = logging.getLogger(__name__)
 
