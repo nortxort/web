@@ -56,9 +56,6 @@ class Session:
         :param connector:
         :return: aiohttp.ClientSession object.
         """
-        # if proxy is not:
-        #   cls.connector = ProxyConnector.from_url(proxy)
-
         if connector is not None:
             # try, except?
             cls.connector = connector
@@ -171,7 +168,7 @@ class Session:
     @classmethod
     async def close_connector(cls):
         if cls.connector is not None:
-            log.debug(f'closing connector type: `{type(cls.connector)}`')
+            log.debug(f'closing connector, type: `{type(cls.connector)}`')
             await cls.connector.close()
             cls.connector = None
 
@@ -183,7 +180,7 @@ class Session:
 
     @classmethod
     def _has_cookie_to_delete(cls, morsel):
-        # this is for internal use and should not be called directly
+        # for internal use, do not call directly
         if (morsel.key == cls._cookie_to_delete.key and
                 morsel['domain'] == cls._cookie_to_delete['domain']):
             log.debug(f'morsel deleted: `{morsel}`')

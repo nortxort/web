@@ -12,11 +12,9 @@ web was tested on windows 7/10 using python >= 3.8
 
 [requirements.txt](https://github.com/nortxort/web/blob/master/requirements.txt) contains a list of requirements which can be installed with `pip install -r /path/to/requirements.txt`
 
-[optional-requirements.txt](https://github.com/nortxort/web/blob/master/optional-requirements.txt) contains optional requirements, install them the same way as requirements.
-
 ## Usage
 
-A few simple tests are provided in the [test](https://github.com/nortxort/web/blob/master/tests) folder.
+A few simple examples are provided in the [examples](https://github.com/nortxort/web/blob/master/examples) folder.
 
 ## Author
 
