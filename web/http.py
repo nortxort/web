@@ -49,23 +49,19 @@ def default_headers(headers: dict = None, rua: bool = False) -> dict:
     :param rua: Use a random user agent string.
     :return: A header dictionary.
     """
-    if isinstance(headers, OrderedDict):
+    if isinstance(headers, (dict, OrderedDict)):
         return headers
 
-    if isinstance(headers, dict):
-        if headers.get('User-Agent') is None:
-            headers['User-Agent'] = agent.DEFAULT_AGENT
-        if rua:
-            headers['User-Agent'] = agent.random_agent()
+    bh = {
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate',
+        'User-Agent': agent.DEFAULT_AGENT
+    }
 
-        return headers
-    else:
-        if rua:
-            ua = agent.random_agent()
-        else:
-            ua = agent.DEFAULT_AGENT
+    if rua:
+        bh['User-Agent'] = agent.random_agent()
 
-        return {'User-Agent': ua}
+    return bh
 
 
 async def request(method: str, url: str, **kwargs):
@@ -177,7 +173,7 @@ async def delete(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientResponse or None.
+    :return: An aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='DELETE', url=url, **kwargs)
@@ -189,7 +185,7 @@ async def patch(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientResponse or None.
+    :return: An aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PATCH', url=url, **kwargs)
@@ -201,7 +197,7 @@ async def put(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: A aiohttp.ClientResponse or None.
+    :return: An aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PUT', url=url, **kwargs)
