@@ -26,11 +26,10 @@ DEALINGS IN THE SOFTWARE.
 
 from .agent import DEFAULT_AGENT, COMMON_AGENTS, random_agent
 from .session import Session
-from .utilities import url_parse, url_encode, url_decode
 from .http import request, get, post, websocket, \
      download_file, default_headers, put, patch, delete
 
-__version__ = '2.0.0'  # 2.0.0 25/5/2024
+__version__ = '2.1.0'  # 2.1.0 29/9/2024
 
 __all__ = [
     '__version__',
@@ -46,8 +45,5 @@ __all__ = [
     'default_headers',
     'put',
     'patch',
-    'delete',
-    'url_parse',
-    'url_encode',
-    'url_decode'
+    'delete'
 ]
