@@ -30,22 +30,30 @@ from web import get, Session
 
 
 def show_cookies_jar():
-    print(f'cookie items in jar: {len(Session.cookie_jar())}')
+    print(f'cookie items in cookie_jar: {len(Session.cookie_jar())}')
 
     for cookie in Session.cookie_jar():
-        print(f'cookie> {cookie}')
+        print(f'cookie_jar cookie> {cookie}')
 
 
 async def set_cookie():
-    # each of the urls will set a cookie
+    # each url will set a cookie/value
     urls = [
         'http://httpbin.org/cookies/set/cookie1/cookie1_value',
         'http://httpbin.org/cookies/set/cookie2/cookie2_value',
         'http://httpbin.org/cookies/set/cookie3/cookie3_value'
     ]
 
+    # concurrency
+    tasks = []
     for url in urls:
-        await get(url)
+        task = asyncio.create_task(get(url))
+        tasks.append(task)
+
+    await asyncio.gather(*tasks)
+
+    # for url in urls:
+    #     await get(url)
 
 
 async def delete_cookie():
@@ -66,7 +74,6 @@ async def delete_cookie():
 
 
 async def get_cookies_by_domain():
-    # set some cookies
     await set_cookie()
 
     # get all cookies for domain
@@ -74,8 +81,18 @@ async def get_cookies_by_domain():
     for cookie in cookies:
         print(f'cookie> {cookie}')
 
-    # close the session
     await Session.close()
 
 
-asyncio.run(get_cookies_by_domain())
+async def filter_cookies():
+    await set_cookie()
+
+    # filter cookies by request url
+    filtered_cookies = Session.filter_cookies('http://httpbin.org')
+    for cookie in filtered_cookies:
+        print(filtered_cookies[cookie])
+
+    await Session.close()
+
+
+asyncio.run(filter_cookies())

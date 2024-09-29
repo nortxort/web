@@ -175,7 +175,6 @@ class Session:
 
     @classmethod
     def _has_cookie_to_delete(cls, morsel):
-        # for internal use, do not call directly
         if (morsel.key == cls._cookie_to_delete.key and
                 morsel['domain'] == cls._cookie_to_delete['domain']):
             log.debug(f'morsel deleted: `{morsel}`')
