@@ -108,8 +108,6 @@ class Session:
         None will be returned if no cookies for the domain exists,
         or if there is no cookie with that name.
         """
-        log.debug(f'domain: `{domain}`, name: `{name}`')
-
         domain_cookies = []
         if cls.session is not None:
 
@@ -119,8 +117,10 @@ class Session:
 
             if len(domain_cookies) > 0:
                 if name is None:
+                    log.debug(f'cookies lookup for: `{domain}')
                     return domain_cookies
                 else:
+                    log.debug(f'cookie lookup for: `{domain}`, cookie name: `{name}`')
                     for cookie in domain_cookies:
                         if cookie.key == name:
                             return cookie
@@ -177,6 +177,6 @@ class Session:
     def _has_cookie_to_delete(cls, morsel):
         if (morsel.key == cls._cookie_to_delete.key and
                 morsel['domain'] == cls._cookie_to_delete['domain']):
-            log.debug(f'morsel deleted: `{morsel}`')
+            log.debug(f'deleting morsel: `{morsel}`')
             return True
         return False
