@@ -117,7 +117,7 @@ class Session:
 
             if len(domain_cookies) > 0:
                 if name is None:
-                    log.debug(f'cookies lookup for: `{domain}')
+                    log.debug(f'cookies lookup for: `{domain}`')
                     return domain_cookies
                 else:
                     log.debug(f'cookie lookup for: `{domain}`, cookie name: `{name}`')
