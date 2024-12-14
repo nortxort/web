@@ -33,9 +33,9 @@ from . import agent
 from .session import Session
 
 try:
-    import aiofiles
+    import aiofile
 except ImportError:
-    aiofiles = None
+    aiofile = None
 
 
 log = logging.getLogger(__name__)
@@ -106,28 +106,26 @@ async def request(method: str, url: str, **kwargs):
         return response
 
 
-async def download_file(url: str, destination: str, chunk_size: int = 1024, **kwargs):
+async def download_file(url: str, destination: str, **kwargs):
     """
     Download file.
 
     :param url: The url of the file to download.
     :param destination: The destination path and file name to save.
-    :param chunk_size: The size of the chunks to read/write.
     :return: The destination of the downloaded file.
     :rtype: str | None
     """
-    if aiofiles is None:
-        log.error('aiofiles not installed - cannot download files!')
-        return
+    if aiofile is None:
+        log.error('aiofile not installed - cannot download files!')
+        return None
 
     response = await request('GET', url=url, **kwargs)
     if response is not None:
 
         log.debug(f'downloading {url} to {destination}')
 
-        async with aiofiles.open(destination, mode='wb') as f:
-            async for data in response.content.iter_chunked(chunk_size):
-                await f.write(await data)
+        async with aiofile.async_open(destination, 'wb') as f:
+            await f.write(await response.read())
 
         return destination
 
