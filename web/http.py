@@ -121,13 +121,25 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024, **kw
         return
 
     response = await request('GET', url=url, **kwargs)
+
     if response is not None:
 
+        file_size = int(response.headers.get('Content-Length', 0))
         log.debug(f'downloading {url} to {destination}')
 
+<<<<<<< Updated upstream
         async with aiofiles.open(destination, mode='wb') as f:
             async for data in response.content.iter_chunked(chunk_size):
                 await f.write(await data)
+=======
+        async with aiofile.async_open(destination, 'wb') as f:
+            while True:
+                data = await response.content.read(4096)  # maybe set higher?
+                if not data:
+                    log.debug(f'downloaded {file_size} bytes from {url}')
+                    break
+                await f.write(data)
+>>>>>>> Stashed changes
 
         return destination
 
@@ -139,7 +151,7 @@ async def websocket(url: str, **kwargs):
     websocket request.
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientWebSocketResponse or None.
+    :return: aiohttp.ClientWebSocketResponse or None.
     :rtype: aiohttp.ClientWebSocketResponse | None
     """
     return await request(method='websocket', url=url, **kwargs)
@@ -150,7 +162,7 @@ async def get(url: str, **kwargs):
     GET request.
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='GET', url=url, **kwargs)
@@ -161,7 +173,7 @@ async def post(url: str, **kwargs):
     POST request.
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='POST', url=url, **kwargs)
@@ -173,7 +185,7 @@ async def delete(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='DELETE', url=url, **kwargs)
@@ -185,7 +197,7 @@ async def patch(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PATCH', url=url, **kwargs)
@@ -197,7 +209,7 @@ async def put(url: str, **kwargs):
     TODO: Test
 
     :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PUT', url=url, **kwargs)
