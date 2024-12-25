@@ -28,14 +28,10 @@ import logging
 from collections import OrderedDict
 
 import aiohttp
+import aiofile
 
 from . import agent
 from .session import Session
-
-try:
-    import aiofile
-except ImportError:
-    aiofile = None
 
 
 log = logging.getLogger(__name__)
@@ -45,9 +41,9 @@ def default_headers(headers: dict = None, rua: bool = False) -> dict:
     """
     Construct a basic header.
 
-    :param headers: A user provided header.
-    :param rua: Use a random user agent string.
-    :return: A header dictionary.
+    :param headers: user provided header.
+    :param rua: use random user agent string.
+    :return: header dictionary.
     """
     if isinstance(headers, (dict, OrderedDict)):
         return headers
@@ -68,9 +64,9 @@ async def request(method: str, url: str, **kwargs):
     """
     aiohttp wrapper for HTTP requests.
 
-    :param method: The request method.
-    :param url: The url for the request.
-    :param kwargs: Keywords, see
+    :param method: request method.
+    :param url: url for the request.
+    :param kwargs: keywords, see
     https://github.com/aio-libs/aiohttp/blob/581e97654410aa4b372b93e69434f6de79feeef4/aiohttp/client.py#L953
     :return: aiohttp.ClientResponse or None on error.
     :rtype: aiohttp.ClientResponse | None
@@ -80,8 +76,6 @@ async def request(method: str, url: str, **kwargs):
 
     header = kwargs.get('headers')
     kwargs['headers'] = default_headers(header, kwargs.pop('rua', False))
-
-    log.debug('headers: ' + str(kwargs['headers']))
 
     if Session.session is None:
         session = Session.create()
@@ -106,38 +100,46 @@ async def request(method: str, url: str, **kwargs):
         return response
 
 
-async def download_file(url: str, destination: str, **kwargs):
+async def download_file(url: str, path: str,
+                        chunk_size: int = 4096, **kwargs) -> tuple:
     """
     Download file.
 
-    :param url: The url of the file to download.
-    :param destination: The destination path and file name to save.
-    :return: The destination of the downloaded file.
-    :rtype: str | None
+    :param url: url of the file to download.
+    :param path: path and file name of the file to save.
+    :param chunk_size: chunk size to read from the response.
+    :return: path, size and header content length of file.
     """
-    if aiofile is None:
-        log.error('aiofile not installed - cannot download files!')
-        return None
-
     response = await request('GET', url=url, **kwargs)
+
     if response is not None:
 
-        log.debug(f'downloading {url} to {destination}')
+        cl = int(response.headers.get('Content-Length', 0))
+        log.debug(f'downloading {url} to {path}')
 
-        async with aiofile.async_open(destination, 'wb') as f:
-            await f.write(await response.read())
+        async with aiofile.async_open(path, 'wb') as f:
 
-        return destination
+            size = 0
+            while True:
 
-    return None
+                data = await response.content.read(chunk_size)
+                if not data:
+                    log.debug(f'downloaded {size} bytes from {url}')
+                    break
+                await f.write(data)
+                size += len(data)
+
+        return path, size, cl
+
+    return '', 0, 0
 
 
 async def websocket(url: str, **kwargs):
     """
     websocket request.
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientWebSocketResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientWebSocketResponse or None.
     :rtype: aiohttp.ClientWebSocketResponse | None
     """
     return await request(method='websocket', url=url, **kwargs)
@@ -147,8 +149,8 @@ async def get(url: str, **kwargs):
     """
     GET request.
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='GET', url=url, **kwargs)
@@ -158,8 +160,8 @@ async def post(url: str, **kwargs):
     """
     POST request.
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='POST', url=url, **kwargs)
@@ -170,8 +172,8 @@ async def delete(url: str, **kwargs):
     DELETE request.
     TODO: Test
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='DELETE', url=url, **kwargs)
@@ -182,8 +184,8 @@ async def patch(url: str, **kwargs):
     PATCH request.
     TODO: Test
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PATCH', url=url, **kwargs)
@@ -194,8 +196,8 @@ async def put(url: str, **kwargs):
     PUT request.
     TODO: Test
 
-    :param url: The url of the resource.
-    :return: An aiohttp.ClientResponse or None.
+    :param url: url of the resource.
+    :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
     return await request(method='PUT', url=url, **kwargs)
