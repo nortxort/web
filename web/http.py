@@ -28,15 +28,19 @@ import logging
 from collections import OrderedDict
 
 import aiohttp
+import aiofile
 
 from . import agent
 from .session import Session
 
+<<<<<<< Updated upstream
 try:
     import aiofiles
 except ImportError:
     aiofiles = None
 
+=======
+>>>>>>> Stashed changes
 
 log = logging.getLogger(__name__)
 
@@ -45,9 +49,9 @@ def default_headers(headers: dict = None, rua: bool = False) -> dict:
     """
     Construct a basic header.
 
-    :param headers: A user provided header.
-    :param rua: Use a random user agent string.
-    :return: A header dictionary.
+    :param headers: user provided header.
+    :param rua: use random user agent string.
+    :return: header dictionary.
     """
     if isinstance(headers, (dict, OrderedDict)):
         return headers
@@ -68,9 +72,9 @@ async def request(method: str, url: str, **kwargs):
     """
     aiohttp wrapper for HTTP requests.
 
-    :param method: The request method.
-    :param url: The url for the request.
-    :param kwargs: Keywords, see
+    :param method: request method.
+    :param url: url for the request.
+    :param kwargs: keywords, see
     https://github.com/aio-libs/aiohttp/blob/581e97654410aa4b372b93e69434f6de79feeef4/aiohttp/client.py#L953
     :return: aiohttp.ClientResponse or None on error.
     :rtype: aiohttp.ClientResponse | None
@@ -80,8 +84,6 @@ async def request(method: str, url: str, **kwargs):
 
     header = kwargs.get('headers')
     kwargs['headers'] = default_headers(header, kwargs.pop('rua', False))
-
-    log.debug('headers: ' + str(kwargs['headers']))
 
     if Session.session is None:
         session = Session.create()
@@ -106,6 +108,7 @@ async def request(method: str, url: str, **kwargs):
         return response
 
 
+<<<<<<< Updated upstream
 async def download_file(url: str, destination: str, chunk_size: int = 1024, **kwargs):
     """
     Download file.
@@ -120,10 +123,23 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024, **kw
         log.error('aiofiles not installed - cannot download files!')
         return
 
+=======
+async def download_file(url: str, path: str,
+                        chunk_size: int = 4096, **kwargs) -> tuple:
+    """
+    Download file.
+
+    :param url: url of the file to download.
+    :param path: path and file name of the file to save.
+    :param chunk_size: chunk size to read from the response.
+    :return: path, size and header content length of file.
+    """
+>>>>>>> Stashed changes
     response = await request('GET', url=url, **kwargs)
 
     if response is not None:
 
+<<<<<<< Updated upstream
         file_size = int(response.headers.get('Content-Length', 0))
         log.debug(f'downloading {url} to {destination}')
 
@@ -140,17 +156,37 @@ async def download_file(url: str, destination: str, chunk_size: int = 1024, **kw
                     break
                 await f.write(data)
 >>>>>>> Stashed changes
+=======
+        cl = int(response.headers.get('Content-Length', 0))
+        log.debug(f'downloading {url} to {path}')
 
-        return destination
+        async with aiofile.async_open(path, 'wb') as f:
+>>>>>>> Stashed changes
 
-    return None
+            size = 0
+            while True:
+
+                data = await response.content.read(chunk_size)
+                if not data:
+                    log.debug(f'downloaded {size} bytes from {url}')
+                    break
+                await f.write(data)
+                size += len(data)
+
+        return path, size, cl
+
+    return '', 0, 0
 
 
 async def websocket(url: str, **kwargs):
     """
     websocket request.
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientWebSocketResponse or None.
     :rtype: aiohttp.ClientWebSocketResponse | None
     """
@@ -161,7 +197,11 @@ async def get(url: str, **kwargs):
     """
     GET request.
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -172,7 +212,11 @@ async def post(url: str, **kwargs):
     """
     POST request.
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -184,7 +228,11 @@ async def delete(url: str, **kwargs):
     DELETE request.
     TODO: Test
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -196,7 +244,11 @@ async def patch(url: str, **kwargs):
     PATCH request.
     TODO: Test
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -208,7 +260,11 @@ async def put(url: str, **kwargs):
     PUT request.
     TODO: Test
 
+<<<<<<< Updated upstream
     :param url: The url of the resource.
+=======
+    :param url: url of the resource.
+>>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """

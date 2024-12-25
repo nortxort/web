@@ -29,7 +29,11 @@ from .session import Session
 from .http import request, get, post, websocket, \
      download_file, default_headers, put, patch, delete
 
+<<<<<<< Updated upstream
 __version__ = '2.1.0'  # 2.1.0 29/9/2024
+=======
+__version__ = '2.3.0'  # 2.3.0 25/12/2024
+>>>>>>> Stashed changes
 
 __all__ = [
     '__version__',
