@@ -34,13 +34,12 @@ async def download_a_file():
     """
     Test the download file feature of the web package.
     """
-    # full path including file name and extension
-    download_location = await download_file(
-        'https://speed.hetzner.de/100MB.bin',
-        os.getcwd() + '\\100MB.bin')
+    location, file_size, content_length = await download_file(
+        url='https://nbg1-speed.hetzner.com/100MB.bin',
+        path='100MB.bin')
 
-    if download_location is not None:
-        print(download_location)
+    if file_size > 0:
+        print(location, file_size, content_length)
 
     # close the session
     await Session.close()
