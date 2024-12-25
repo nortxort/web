@@ -67,7 +67,7 @@ async def request(method: str, url: str, **kwargs):
     :param method: request method.
     :param url: url for the request.
     :param kwargs: keywords, see
-    https://github.com/aio-libs/aiohttp/blob/581e97654410aa4b372b93e69434f6de79feeef4/aiohttp/client.py#L953
+    https://docs.aiohttp.org/en/stable/client_reference.html#aiohttp.ClientSession.request
     :return: aiohttp.ClientResponse or None on error.
     :rtype: aiohttp.ClientResponse | None
     """
