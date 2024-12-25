@@ -33,14 +33,6 @@ import aiofile
 from . import agent
 from .session import Session
 
-<<<<<<< Updated upstream
-try:
-    import aiofiles
-except ImportError:
-    aiofiles = None
-
-=======
->>>>>>> Stashed changes
 
 log = logging.getLogger(__name__)
 
@@ -108,22 +100,6 @@ async def request(method: str, url: str, **kwargs):
         return response
 
 
-<<<<<<< Updated upstream
-async def download_file(url: str, destination: str, chunk_size: int = 1024, **kwargs):
-    """
-    Download file.
-
-    :param url: The url of the file to download.
-    :param destination: The destination path and file name to save.
-    :param chunk_size: The size of the chunks to read/write.
-    :return: The destination of the downloaded file.
-    :rtype: str | None
-    """
-    if aiofiles is None:
-        log.error('aiofiles not installed - cannot download files!')
-        return
-
-=======
 async def download_file(url: str, path: str,
                         chunk_size: int = 4096, **kwargs) -> tuple:
     """
@@ -134,34 +110,14 @@ async def download_file(url: str, path: str,
     :param chunk_size: chunk size to read from the response.
     :return: path, size and header content length of file.
     """
->>>>>>> Stashed changes
     response = await request('GET', url=url, **kwargs)
 
     if response is not None:
 
-<<<<<<< Updated upstream
-        file_size = int(response.headers.get('Content-Length', 0))
-        log.debug(f'downloading {url} to {destination}')
-
-<<<<<<< Updated upstream
-        async with aiofiles.open(destination, mode='wb') as f:
-            async for data in response.content.iter_chunked(chunk_size):
-                await f.write(await data)
-=======
-        async with aiofile.async_open(destination, 'wb') as f:
-            while True:
-                data = await response.content.read(4096)  # maybe set higher?
-                if not data:
-                    log.debug(f'downloaded {file_size} bytes from {url}')
-                    break
-                await f.write(data)
->>>>>>> Stashed changes
-=======
         cl = int(response.headers.get('Content-Length', 0))
         log.debug(f'downloading {url} to {path}')
 
         async with aiofile.async_open(path, 'wb') as f:
->>>>>>> Stashed changes
 
             size = 0
             while True:
@@ -182,11 +138,7 @@ async def websocket(url: str, **kwargs):
     """
     websocket request.
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientWebSocketResponse or None.
     :rtype: aiohttp.ClientWebSocketResponse | None
     """
@@ -197,11 +149,7 @@ async def get(url: str, **kwargs):
     """
     GET request.
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -212,11 +160,7 @@ async def post(url: str, **kwargs):
     """
     POST request.
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -228,11 +172,7 @@ async def delete(url: str, **kwargs):
     DELETE request.
     TODO: Test
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -244,11 +184,7 @@ async def patch(url: str, **kwargs):
     PATCH request.
     TODO: Test
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """
@@ -260,11 +196,7 @@ async def put(url: str, **kwargs):
     PUT request.
     TODO: Test
 
-<<<<<<< Updated upstream
-    :param url: The url of the resource.
-=======
     :param url: url of the resource.
->>>>>>> Stashed changes
     :return: aiohttp.ClientResponse or None.
     :rtype: aiohttp.ClientResponse | None
     """

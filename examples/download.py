@@ -24,6 +24,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+import os
 import asyncio
 
 from web import download_file, Session
@@ -33,12 +34,12 @@ async def download_a_file():
     """
     Test the download file feature of the web package.
     """
-    path, file_size, content_length = await download_file(
+    location, file_size, content_length = await download_file(
         url='https://nbg1-speed.hetzner.com/100MB.bin',
         path='100MB.bin')
 
     if file_size > 0:
-        print(path, file_size, content_length)
+        print(location, file_size, content_length)
 
     # close the session
     await Session.close()
