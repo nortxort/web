@@ -34,12 +34,12 @@ async def download_a_file():
     """
     Test the download file feature of the web package.
     """
-    location, file_size, content_length = await download_file(
+    path, file_size, content_length = await download_file(
         url='https://nbg1-speed.hetzner.com/100MB.bin',
         path='100MB.bin')
 
     if file_size > 0:
-        print(location, file_size, content_length)
+        print(path, file_size, content_length)
 
     # close the session
     await Session.close()
