@@ -44,16 +44,8 @@ async def set_cookie():
         'http://httpbin.org/cookies/set/cookie3/cookie3_value'
     ]
 
-    # concurrency
-    tasks = []
     for url in urls:
-        task = asyncio.create_task(get(url))
-        tasks.append(task)
-
-    await asyncio.gather(*tasks)
-
-    # for url in urls:
-    #     await get(url)
+        await get(url)
 
 
 async def delete_cookie():
